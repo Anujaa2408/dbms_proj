@@ -3,8 +3,8 @@
 -- SRM Institute Hostel Room Allocation System
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS HostelDB;
-USE HostelDB;
+CREATE DATABASE IF NOT EXISTS project;
+USE project;
 
 -- ============================================================
 -- DROP existing objects (clean slate)
@@ -339,21 +339,21 @@ INSERT INTO Hostel (hostel_name, hostel_type, total_rooms, total_capacity, warde
 ('APJ Abdul Kalam Hall', 'Boys',  35, 105, 'Dr. Suresh Babu',   '9876543212', 'Block C, SRM Campus'),
 ('Sarojini Naidu Hall',  'Girls', 20, 40,  'Dr. Lakshmi Menon', '9876543213', 'Block D, SRM Campus');
 
--- Rooms
+-- Rooms (insert with occupied=0 so triggers don't block seed allocations)
 INSERT INTO Room (hostel_id, room_number, floor_number, room_type, capacity, occupied, rent_per_month, status, has_ac, has_wifi) VALUES
-(1, 'NM-101', 1, 'Double', 2, 2, 8000.00, 'Full',      TRUE,  TRUE),
-(1, 'NM-102', 1, 'Double', 2, 1, 8000.00, 'Available',  TRUE,  TRUE),
-(1, 'NM-201', 2, 'Single', 1, 0, 12000.00,'Available',  TRUE,  TRUE),
-(1, 'NM-202', 2, 'Triple', 3, 2, 6000.00, 'Available',  FALSE, TRUE),
-(2, 'IG-101', 1, 'Double', 2, 1, 8500.00, 'Available',  TRUE,  TRUE),
-(2, 'IG-102', 1, 'Single', 1, 1, 13000.00,'Full',       TRUE,  TRUE),
-(2, 'IG-201', 2, 'Double', 2, 0, 8500.00, 'Available',  FALSE, TRUE),
-(3, 'AK-101', 1, 'Triple', 3, 3, 5500.00, 'Full',       FALSE, TRUE),
-(3, 'AK-102', 1, 'Double', 2, 1, 7500.00, 'Available',  FALSE, TRUE),
-(3, 'AK-201', 2, 'Single', 1, 0, 11000.00,'Available',  TRUE,  TRUE),
-(4, 'SN-101', 1, 'Double', 2, 2, 9000.00, 'Full',       TRUE,  TRUE),
-(4, 'SN-102', 1, 'Double', 2, 0, 9000.00, 'Available',  TRUE,  TRUE),
-(4, 'SN-201', 2, 'Triple', 3, 1, 6500.00, 'Available',  FALSE, TRUE);
+(1, 'NM-101', 1, 'Double', 2, 0, 8000.00, 'Available', TRUE,  TRUE),
+(1, 'NM-102', 1, 'Double', 2, 0, 8000.00, 'Available', TRUE,  TRUE),
+(1, 'NM-201', 2, 'Single', 1, 0, 12000.00,'Available', TRUE,  TRUE),
+(1, 'NM-202', 2, 'Triple', 3, 0, 6000.00, 'Available', FALSE, TRUE),
+(2, 'IG-101', 1, 'Double', 2, 0, 8500.00, 'Available', TRUE,  TRUE),
+(2, 'IG-102', 1, 'Single', 1, 0, 13000.00,'Available', TRUE,  TRUE),
+(2, 'IG-201', 2, 'Double', 2, 0, 8500.00, 'Available', FALSE, TRUE),
+(3, 'AK-101', 1, 'Triple', 3, 0, 5500.00, 'Available', FALSE, TRUE),
+(3, 'AK-102', 1, 'Double', 2, 0, 7500.00, 'Available', FALSE, TRUE),
+(3, 'AK-201', 2, 'Single', 1, 0, 11000.00,'Available', TRUE,  TRUE),
+(4, 'SN-101', 1, 'Double', 2, 0, 9000.00, 'Available', TRUE,  TRUE),
+(4, 'SN-102', 1, 'Double', 2, 0, 9000.00, 'Available', TRUE,  TRUE),
+(4, 'SN-201', 2, 'Triple', 3, 0, 6500.00, 'Available', FALSE, TRUE);
 
 -- Students
 INSERT INTO Student (registration_no, first_name, last_name, email, phone, gender, department, year_of_study, date_of_birth, guardian_name, guardian_phone, status) VALUES

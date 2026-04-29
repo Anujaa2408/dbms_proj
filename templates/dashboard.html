@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📊 Dashboard</h1>
+    <div class="page-header__actions">
+        <span style="color:var(--text-muted);font-size:0.85rem;">{{ now.strftime('%B %d, %Y') if now else '' }}</span>
+    </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="stats-grid">
+    <div class="card stat-card stat-card--primary">
+        <div class="card__title">Total Students</div>
+        <div class="card__value">{{ stats.total_students }}</div>
+        <div class="card__subtitle">Active enrollments</div>
+        <div class="stat-icon">🎓</div>
+    </div>
+    <div class="card stat-card stat-card--tertiary">
+        <div class="card__title">Occupancy Rate</div>
+        <div class="card__value">{{ stats.occupancy_rate }}%</div>
+        <div class="card__subtitle">{{ stats.occupied_beds }}/{{ stats.total_beds }} beds</div>
+        <div class="stat-icon">🏠</div>
+    </div>
+    <div class="card stat-card stat-card--secondary">
+        <div class="card__title">Revenue</div>
+        <div class="card__value">₹{{ "{:,.0f}".format(stats.total_revenue) }}</div>
+        <div class="card__subtitle">Total collected</div>
+        <div class="stat-icon">💰</div>
+    </div>
+    <div class="card stat-card stat-card--info">
+        <div class="card__title">Pending Bookings</div>
+        <div class="card__value">{{ stats.pending_bookings }}</div>
+        <div class="card__subtitle">Awaiting approval</div>
+        <div class="stat-icon">📋</div>
+    </div>
+</div>
+
+<!-- Bento Grid -->
+<div class="bento-grid">
+    <!-- Recent Activity -->
+    <div class="span-8">
+        <div class="card">
+            <div class="card__title">Recent Allocations</div>
+            <div style="overflow-x:auto;margin-top:12px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Room</th>
+                            <th>Hostel</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in recent_allocations %}
+                        <tr>
+                            <td>{{ a.first_name }} {{ a.last_name }}</td>
+                            <td>{{ a.room_number }}</td>
+                            <td>{{ a.hostel_name }}</td>
+                            <td>{{ a.alloc_date }}</td>
+                            <td><span class="badge badge--{{ a.status|lower }}">{{ a.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center" style="padding:30px;color:var(--text-muted);">No recent allocations</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hostel Occupancy -->
+    <div class="span-4">
+        <div class="card">
+            <div class="card__title">Hostel Occupancy</div>
+            <div style="margin-top:16px;">
+                {% for h in hostel_stats %}
+                <div style="margin-bottom:16px;">
+                    <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;margin-bottom:4px;">
+                        <span>{{ h.hostel_name }}</span>
+                        <span>{{ h.occupancy_pct|default(0) }}%</span>
+                    </div>
+                    <div style="height:12px;background:#E5E5E5;border-radius:6px;border:2px solid var(--border);overflow:hidden;">
+                        <div style="height:100%;width:{{ h.occupancy_pct|default(0) }}%;background:{% if h.occupancy_pct|default(0)|float > 80 %}var(--status-inactive){% elif h.occupancy_pct|default(0)|float > 50 %}var(--primary){% else %}var(--tertiary){% endif %};border-radius:4px;transition:width 0.5s;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Status Grid -->
+    <div class="span-6">
+        <div class="card">
+            <div class="card__title">Room Status Overview</div>
+            <div class="room-grid" style="margin-top:12px;">
+                {% for r in rooms_status %}
+                <div class="room-cell room-cell--{% if r.status == 'Full' %}full{% elif r.occupied > 0 %}partial{% elif r.status == 'Maintenance' %}maintenance{% else %}available{% endif %}">
+                    <div class="room-cell__number">{{ r.room_number }}</div>
+                    <div class="room-cell__info">{{ r.occupied }}/{{ r.capacity }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Payments Alert -->
+    <div class="span-6">
+        <div class="card">
+            <div class="card__title">💰 Pending Payments</div>
+            <div style="overflow-x:auto;margin-top:12px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pending_payments %}
+                        <tr>
+                            <td>{{ p.first_name }} {{ p.last_name }}</td>
+                            <td>₹{{ "{:,.0f}".format(p.amount) }}</td>
+                            <td>{{ p.payment_for }}</td>
+                            <td><span class="badge badge--pending">{{ p.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center" style="padding:20px;color:var(--text-muted);">No pending payments 🎉</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

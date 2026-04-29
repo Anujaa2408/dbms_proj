@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ student.first_name }} {{ student.last_name }} — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👤 {{ student.first_name }} {{ student.last_name }}</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('student_edit', id=student.student_id) }}" class="btn btn--primary btn--sm">✏️ Edit</a>
+        <a href="{{ url_for('students_list') }}" class="btn btn--ghost btn--sm">← Back</a>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <div class="span-6">
+        <div class="card">
+            <div class="card__title">Student Information</div>
+            <div class="detail-grid" style="margin-top:16px;">
+                <div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Registration No</div>
+                        <div class="detail-item__value">{{ student.registration_no }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Email</div>
+                        <div class="detail-item__value">{{ student.email }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Phone</div>
+                        <div class="detail-item__value">{{ student.phone or 'N/A' }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Gender</div>
+                        <div class="detail-item__value">{{ student.gender }}</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Department</div>
+                        <div class="detail-item__value">{{ student.department }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Year</div>
+                        <div class="detail-item__value">{{ student.year_of_study }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Date of Birth</div>
+                        <div class="detail-item__value">{{ student.date_of_birth or 'N/A' }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-item__label">Status</div>
+                        <div class="detail-item__value"><span class="badge badge--{{ student.status|lower }}">{{ student.status }}</span></div>
+                    </div>
+                </div>
+            </div>
+            {% if student.guardian_name %}
+            <div style="margin-top:16px;padding-top:16px;border-top:2px solid #eee;">
+                <div class="card__title">Guardian</div>
+                <div style="margin-top:8px;font-size:0.95rem;">{{ student.guardian_name }} — {{ student.guardian_phone or 'N/A' }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="span-6">
+        <div class="card">
+            <div class="card__title">Allocation History</div>
+            <div style="overflow-x:auto;margin-top:12px;">
+                <table>
+                    <thead>
+                        <tr><th>Room</th><th>Hostel</th><th>Date</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for a in allocations %}
+                        <tr>
+                            <td>{{ a.room_number }}</td>
+                            <td>{{ a.hostel_name }}</td>
+                            <td>{{ a.alloc_date }}</td>
+                            <td><span class="badge badge--{{ a.status|lower }}">{{ a.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center" style="padding:20px;color:var(--text-muted);">No allocations</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+            <div class="card__title">Payment History</div>
+            <div style="overflow-x:auto;margin-top:12px;">
+                <table>
+                    <thead>
+                        <tr><th>Amount</th><th>Type</th><th>Date</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in payments %}
+                        <tr>
+                            <td>₹{{ "{:,.0f}".format(p.amount) }}</td>
+                            <td>{{ p.payment_for }}</td>
+                            <td>{{ p.payment_date }}</td>
+                            <td><span class="badge badge--{{ p.status|lower }}">{{ p.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="text-center" style="padding:20px;color:var(--text-muted);">No payments</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

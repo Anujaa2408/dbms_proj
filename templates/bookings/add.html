@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}New Booking — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📋 New Booking Request</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('bookings_list') }}" class="btn btn--ghost">← Back</a>
+    </div>
+</div>
+
+<div class="card form-card">
+    <form method="POST" action="{{ url_for('booking_add') }}" id="booking-form">
+        <div class="form-group">
+            <label for="student_id">Student</label>
+            <select name="student_id" id="student_id" class="form-control" required>
+                <option value="">Select Student</option>
+                {% for s in students %}
+                <option value="{{ s.student_id }}">{{ s.registration_no }} — {{ s.first_name }} {{ s.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="room_id">Preferred Room</label>
+            <select name="room_id" id="room_id" class="form-control" required>
+                <option value="">Select Room</option>
+                {% for r in available_rooms %}
+                <option value="{{ r.room_id }}">{{ r.room_number }} — {{ r.hostel_name }} ({{ r.room_type }}, ₹{{ "{:,.0f}".format(r.rent_per_month) }}/mo)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="check_in_date">Check-in Date</label>
+            <input type="date" name="check_in_date" id="check_in_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="remarks">Remarks</label>
+            <textarea name="remarks" id="remarks" class="form-control" rows="2" placeholder="Optional notes..."></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary" id="btn-submit">📋 Submit Booking</button>
+    </form>
+</div>
+{% endblock %}

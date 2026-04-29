@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ hostel.hostel_name }} Rooms — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏢 {{ hostel.hostel_name }} — Rooms</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('hostels_list') }}" class="btn btn--ghost">← Back</a>
+    </div>
+</div>
+
+<div class="stats-grid" style="margin-bottom:24px;">
+    <div class="card stat-card stat-card--primary">
+        <div class="card__title">Total Rooms</div>
+        <div class="card__value">{{ rooms|length }}</div>
+    </div>
+    <div class="card stat-card stat-card--tertiary">
+        <div class="card__title">Available</div>
+        <div class="card__value">{{ rooms|selectattr('status','equalto','Available')|list|length }}</div>
+    </div>
+    <div class="card stat-card stat-card--secondary">
+        <div class="card__title">Full</div>
+        <div class="card__value">{{ rooms|selectattr('status','equalto','Full')|list|length }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__title">Room Grid</div>
+    <div class="room-grid" style="margin-top:12px;">
+        {% for r in rooms %}
+        <div class="room-cell room-cell--{% if r.status == 'Full' %}full{% elif r.occupied > 0 %}partial{% elif r.status == 'Maintenance' %}maintenance{% else %}available{% endif %}" title="{{ r.room_type }} · ₹{{ r.rent_per_month }}/mo">
+            <div class="room-cell__number">{{ r.room_number }}</div>
+            <div class="room-cell__info">{{ r.occupied }}/{{ r.capacity }}</div>
+            <div class="room-cell__info">{{ r.room_type }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="table-wrapper" style="margin-top:20px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Room</th>
+                <th>Floor</th>
+                <th>Type</th>
+                <th>Occupancy</th>
+                <th>Rent</th>
+                <th>AC</th>
+                <th>WiFi</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in rooms %}
+            <tr>
+                <td><strong>{{ r.room_number }}</strong></td>
+                <td>{{ r.floor_number }}</td>
+                <td>{{ r.room_type }}</td>
+                <td>{{ r.occupied }}/{{ r.capacity }}</td>
+                <td>₹{{ "{:,.0f}".format(r.rent_per_month) }}</td>
+                <td>{% if r.has_ac %}✅{% else %}❌{% endif %}</td>
+                <td>{% if r.has_wifi %}✅{% else %}❌{% endif %}</td>
+                <td><span class="badge badge--{{ r.status|lower }}">{{ r.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

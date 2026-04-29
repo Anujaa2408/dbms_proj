@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Students — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🎓 Students</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('student_add') }}" class="btn btn--primary" id="btn-add-student">➕ Add Student</a>
+    </div>
+</div>
+
+<div class="filters-bar">
+    <form method="GET" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <input type="text" name="q" class="form-control" placeholder="Search name, reg no..." value="{{ request.args.get('q','') }}" style="min-width:220px;" id="filter-search">
+        <select name="status" class="form-control" id="filter-status">
+            <option value="">All Status</option>
+            <option value="Active" {% if request.args.get('status')=='Active' %}selected{% endif %}>Active</option>
+            <option value="Inactive" {% if request.args.get('status')=='Inactive' %}selected{% endif %}>Inactive</option>
+            <option value="Graduated" {% if request.args.get('status')=='Graduated' %}selected{% endif %}>Graduated</option>
+        </select>
+        <select name="gender" class="form-control" id="filter-gender">
+            <option value="">All Gender</option>
+            <option value="Male" {% if request.args.get('gender')=='Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if request.args.get('gender')=='Female' %}selected{% endif %}>Female</option>
+        </select>
+        <button type="submit" class="btn btn--primary btn--sm" id="btn-filter">🔍 Filter</button>
+    </form>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Reg No</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Year</th>
+                <th>Gender</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in students %}
+            <tr>
+                <td><strong>{{ s.registration_no }}</strong></td>
+                <td>{{ s.first_name }} {{ s.last_name }}</td>
+                <td>{{ s.department }}</td>
+                <td>{{ s.year_of_study }}</td>
+                <td>{{ s.gender }}</td>
+                <td><span class="badge badge--{{ s.status|lower }}">{{ s.status }}</span></td>
+                <td>
+                    <div class="action-btns">
+                        <a href="{{ url_for('student_detail', id=s.student_id) }}" class="btn btn--sm btn--ghost">👁</a>
+                        <a href="{{ url_for('student_edit', id=s.student_id) }}" class="btn btn--sm btn--ghost">✏️</a>
+                        <form method="POST" action="{{ url_for('student_delete', id=s.student_id) }}" onsubmit="return confirm('Delete this student?')" style="display:inline;">
+                            <button type="submit" class="btn btn--sm btn--ghost" style="color:var(--status-inactive);">🗑</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7">
+                <div class="empty-state">
+                    <div class="empty-state__icon">🎓</div>
+                    <div class="empty-state__text">No students found</div>
+                    <a href="{{ url_for('student_add') }}" class="btn btn--primary">Add First Student</a>
+                </div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

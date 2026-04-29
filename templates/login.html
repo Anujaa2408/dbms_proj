@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Login — HostelMS{% endblock %}
+
+{% block content_noauth %}
+<div class="login-page">
+    <div class="card login-card">
+        <div class="login-card__logo">
+            <h1>HOSTEL<span style="background:var(--text);color:var(--primary);padding:2px 8px;border-radius:4px;font-size:0.9rem;vertical-align:middle;margin-left:4px;">OS</span></h1>
+            <p>Hostel Room Allocation System</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('login') }}" id="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group" style="margin-top:28px;">
+                <button type="submit" class="btn btn--primary" id="login-submit">🔐 Sign In</button>
+            </div>
+        </form>
+
+        <p style="text-align:center;color:var(--text-muted);font-size:0.8rem;margin-top:20px;">
+            Default: admin / admin123
+        </p>
+    </div>
+</div>
+{% endblock %}

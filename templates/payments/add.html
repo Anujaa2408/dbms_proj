@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Add Payment — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>💰 Add Payment</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('payments_list') }}" class="btn btn--ghost">← Back</a>
+    </div>
+</div>
+
+<div class="card form-card">
+    <form method="POST" action="{{ url_for('payment_add') }}" id="payment-form">
+        <div class="form-group">
+            <label for="student_id">Student</label>
+            <select name="student_id" id="student_id" class="form-control" required>
+                <option value="">Select Student</option>
+                {% for s in students %}
+                <option value="{{ s.student_id }}">{{ s.registration_no }} — {{ s.first_name }} {{ s.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="amount">Amount (₹)</label>
+                <input type="number" name="amount" id="amount" class="form-control" required step="0.01" min="0" placeholder="8000.00">
+            </div>
+            <div class="form-group">
+                <label for="payment_date">Payment Date</label>
+                <input type="date" name="payment_date" id="payment_date" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="payment_method">Payment Method</label>
+                <select name="payment_method" id="payment_method" class="form-control">
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="payment_for">Payment For</label>
+                <select name="payment_for" id="payment_for" class="form-control">
+                    <option value="Hostel Fee">Hostel Fee</option>
+                    <option value="Mess Fee">Mess Fee</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Security Deposit">Security Deposit</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="semester">Semester</label>
+                <input type="text" name="semester" id="semester" class="form-control" placeholder="Fall 2025">
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="remarks">Remarks</label>
+            <textarea name="remarks" id="remarks" class="form-control" rows="2" placeholder="Optional notes..."></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary" id="btn-submit">💾 Save Payment</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Rooms — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏠 Rooms</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('room_add') }}" class="btn btn--primary" id="btn-add-room">➕ Add Room</a>
+    </div>
+</div>
+
+<div class="filters-bar">
+    <form method="GET" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <select name="hostel" class="form-control" id="filter-hostel">
+            <option value="">All Hostels</option>
+            {% for h in hostels %}
+            <option value="{{ h.hostel_id }}" {% if request.args.get('hostel')==h.hostel_id|string %}selected{% endif %}>{{ h.hostel_name }}</option>
+            {% endfor %}
+        </select>
+        <select name="status" class="form-control" id="filter-status">
+            <option value="">All Status</option>
+            <option value="Available" {% if request.args.get('status')=='Available' %}selected{% endif %}>Available</option>
+            <option value="Full" {% if request.args.get('status')=='Full' %}selected{% endif %}>Full</option>
+            <option value="Maintenance" {% if request.args.get('status')=='Maintenance' %}selected{% endif %}>Maintenance</option>
+        </select>
+        <select name="type" class="form-control" id="filter-type">
+            <option value="">All Types</option>
+            <option value="Single" {% if request.args.get('type')=='Single' %}selected{% endif %}>Single</option>
+            <option value="Double" {% if request.args.get('type')=='Double' %}selected{% endif %}>Double</option>
+            <option value="Triple" {% if request.args.get('type')=='Triple' %}selected{% endif %}>Triple</option>
+        </select>
+        <button type="submit" class="btn btn--primary btn--sm">🔍 Filter</button>
+    </form>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Room No</th>
+                <th>Hostel</th>
+                <th>Floor</th>
+                <th>Type</th>
+                <th>Occupancy</th>
+                <th>Rent/Month</th>
+                <th>Amenities</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in rooms %}
+            <tr>
+                <td><strong>{{ r.room_number }}</strong></td>
+                <td>{{ r.hostel_name }}</td>
+                <td>{{ r.floor_number }}</td>
+                <td>{{ r.room_type }}</td>
+                <td>{{ r.occupied }}/{{ r.capacity }}</td>
+                <td>₹{{ "{:,.0f}".format(r.rent_per_month) }}</td>
+                <td>
+                    {% if r.has_ac %}❄️{% endif %}
+                    {% if r.has_wifi %}📶{% endif %}
+                </td>
+                <td><span class="badge badge--{{ r.status|lower }}">{{ r.status }}</span></td>
+                <td>
+                    <div class="action-btns">
+                        <a href="{{ url_for('room_edit', id=r.room_id) }}" class="btn btn--sm btn--ghost">✏️</a>
+                        <form method="POST" action="{{ url_for('room_delete', id=r.room_id) }}" onsubmit="return confirm('Delete this room?')" style="display:inline;">
+                            <button type="submit" class="btn btn--sm btn--ghost" style="color:var(--status-inactive);">🗑</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="9">
+                <div class="empty-state">
+                    <div class="empty-state__icon">🏠</div>
+                    <div class="empty-state__text">No rooms found</div>
+                </div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Occupancy Report — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📈 Occupancy Report</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('report_students') }}" class="btn btn--ghost btn--sm">🎓 Students</a>
+        <a href="{{ url_for('report_payments') }}" class="btn btn--ghost btn--sm">💰 Payments</a>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <div class="span-8">
+        <div class="card">
+            <div class="card__title">Occupancy by Hostel</div>
+            <div class="chart-container" style="margin-top:12px;">
+                <canvas id="occupancyChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="span-4">
+        <div class="card">
+            <div class="card__title">Overall Stats</div>
+            <div style="margin-top:16px;">
+                <div class="detail-item">
+                    <div class="detail-item__label">Total Beds</div>
+                    <div class="detail-item__value" style="font-size:1.8rem;font-family:var(--font-display);">{{ overall.total_beds }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item__label">Occupied</div>
+                    <div class="detail-item__value" style="font-size:1.8rem;font-family:var(--font-display);color:var(--secondary);">{{ overall.occupied_beds }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-item__label">Available</div>
+                    <div class="detail-item__value" style="font-size:1.8rem;font-family:var(--font-display);color:var(--tertiary);">{{ overall.available_beds }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="span-12">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hostel</th>
+                        <th>Type</th>
+                        <th>Rooms</th>
+                        <th>Total Beds</th>
+                        <th>Occupied</th>
+                        <th>Available</th>
+                        <th>Occupancy %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in report_data %}
+                    <tr>
+                        <td><strong>{{ h.hostel_name }}</strong></td>
+                        <td>{{ h.hostel_type }}</td>
+                        <td>{{ h.total_rooms }}</td>
+                        <td>{{ h.total_beds }}</td>
+                        <td>{{ h.occupied_beds }}</td>
+                        <td>{{ h.available_beds }}</td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="width:80px;height:10px;background:#E5E5E5;border-radius:5px;border:1px solid var(--border);overflow:hidden;">
+                                    <div style="height:100%;width:{{ h.occupancy_pct }}%;background:{% if h.occupancy_pct|float > 80 %}var(--status-inactive){% elif h.occupancy_pct|float > 50 %}var(--primary){% else %}var(--tertiary){% endif %};"></div>
+                                </div>
+                                <strong>{{ h.occupancy_pct }}%</strong>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('occupancyChart').getContext('2d');
+const data = {{ chart_data|tojson }};
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: data.labels,
+        datasets: [
+            { label: 'Occupied', data: data.occupied, backgroundColor: '#CD4800', borderColor: '#1A1A1A', borderWidth: 2 },
+            { label: 'Available', data: data.available, backgroundColor: '#0DF79D', borderColor: '#1A1A1A', borderWidth: 2 }
+        ]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { font: { family: 'Space Grotesk', weight: 'bold' } } } },
+        scales: {
+            x: { stacked: true, grid: { display: false } },
+            y: { stacked: true, beginAtZero: true }
+        }
+    }
+});
+</script>
+{% endblock %}

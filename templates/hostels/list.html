@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Hostels — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏢 Hostels</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('hostel_add') }}" class="btn btn--primary" id="btn-add-hostel">➕ Add Hostel</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    {% for h in hostels %}
+    <div class="card stat-card" style="border-left:6px solid {% if h.hostel_type=='Boys' %}var(--status-info){% elif h.hostel_type=='Girls' %}var(--secondary){% else %}var(--tertiary){% endif %};">
+        <div class="card__title">{{ h.hostel_name }}</div>
+        <div class="card__value" style="font-size:1.5rem;">{{ h.hostel_type }}</div>
+        <div class="card__subtitle">
+            {{ h.total_rooms }} rooms · Capacity {{ h.total_capacity }}
+            {% if h.warden_name %}<br>Warden: {{ h.warden_name }}{% endif %}
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+            <a href="{{ url_for('hostel_rooms', id=h.hostel_id) }}" class="btn btn--sm btn--primary">🏠 Rooms</a>
+            <a href="{{ url_for('hostel_edit', id=h.hostel_id) }}" class="btn btn--sm btn--ghost">✏️ Edit</a>
+        </div>
+        <div class="stat-icon">🏢</div>
+    </div>
+    {% else %}
+    <div class="card" style="grid-column:1/-1;">
+        <div class="empty-state">
+            <div class="empty-state__icon">🏢</div>
+            <div class="empty-state__text">No hostels found</div>
+            <a href="{{ url_for('hostel_add') }}" class="btn btn--primary">Add First Hostel</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

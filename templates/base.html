@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HostelMS — Hostel Room Allocation System for SRM Institute">
+    <title>{% block title %}HostelMS{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% if session.get('admin_id') %}
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div style="display:flex;align-items:center;gap:16px;">
+            <button class="mobile-toggle" onclick="toggleSidebar()" id="menu-toggle">☰</button>
+            <a href="{{ url_for('dashboard') }}" class="top-nav__brand" style="text-decoration:none;">
+                HOSTEL<span>OS</span>
+            </a>
+        </div>
+        <div class="top-nav__actions">
+            <div class="top-nav__search">
+                <input type="text" placeholder="Search students, rooms..." id="global-search">
+            </div>
+            <div class="top-nav__user" id="nav-user-menu">
+                👤 {{ session.get('admin_name', 'Admin') }}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__section">
+            <div class="sidebar__label">Main</div>
+            <a href="{{ url_for('dashboard') }}" class="sidebar__link {% if request.endpoint == 'dashboard' %}active{% endif %}" id="nav-dashboard">
+                <span class="icon">📊</span> Dashboard
+            </a>
+        </div>
+        <div class="sidebar__section">
+            <div class="sidebar__label">Management</div>
+            <a href="{{ url_for('students_list') }}" class="sidebar__link {% if 'student' in request.endpoint|default('') %}active{% endif %}" id="nav-students">
+                <span class="icon">🎓</span> Students
+            </a>
+            <a href="{{ url_for('rooms_list') }}" class="sidebar__link {% if 'room' in request.endpoint|default('') and 'hostel' not in request.endpoint|default('') %}active{% endif %}" id="nav-rooms">
+                <span class="icon">🏠</span> Rooms
+            </a>
+            <a href="{{ url_for('hostels_list') }}" class="sidebar__link {% if 'hostel' in request.endpoint|default('') %}active{% endif %}" id="nav-hostels">
+                <span class="icon">🏢</span> Hostels
+            </a>
+        </div>
+        <div class="sidebar__section">
+            <div class="sidebar__label">Operations</div>
+            <a href="{{ url_for('allocations_list') }}" class="sidebar__link {% if 'allocation' in request.endpoint|default('') %}active{% endif %}" id="nav-allocations">
+                <span class="icon">🔑</span> Allocations
+            </a>
+            <a href="{{ url_for('bookings_list') }}" class="sidebar__link {% if 'booking' in request.endpoint|default('') %}active{% endif %}" id="nav-bookings">
+                <span class="icon">📋</span> Bookings
+            </a>
+            <a href="{{ url_for('payments_list') }}" class="sidebar__link {% if 'payment' in request.endpoint|default('') %}active{% endif %}" id="nav-payments">
+                <span class="icon">💰</span> Payments
+            </a>
+        </div>
+        <div class="sidebar__section">
+            <div class="sidebar__label">Analytics</div>
+            <a href="{{ url_for('report_occupancy') }}" class="sidebar__link {% if 'report' in request.endpoint|default('') %}active{% endif %}" id="nav-reports">
+                <span class="icon">📈</span> Reports
+            </a>
+        </div>
+        <div class="sidebar__footer">
+            <a href="{{ url_for('logout') }}" class="btn btn--danger" style="width:100%;justify-content:center;" id="nav-logout">
+                🚪 Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container" id="flash-container">
+        {% for category, message in messages %}
+        <div class="flash flash--{{ category }}" onclick="this.remove()">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% else %}
+    <!-- No sidebar/nav for login page -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container" id="flash-container">
+        {% for category, message in messages %}
+        <div class="flash flash--{{ category }}" onclick="this.remove()">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% block content_noauth %}{% endblock %}
+    {% endif %}
+
+    <script>
+        // Sidebar toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('active');
+        }
+        // Auto-dismiss flash messages
+        setTimeout(() => {
+            const fc = document.getElementById('flash-container');
+            if (fc) fc.style.transition = 'opacity 0.5s', fc.style.opacity = '0';
+            setTimeout(() => { if (fc) fc.remove(); }, 500);
+        }, 4000);
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

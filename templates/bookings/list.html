@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Bookings — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📋 Booking Requests</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('booking_add') }}" class="btn btn--primary" id="btn-add-booking">➕ New Booking</a>
+    </div>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Room</th>
+                <th>Hostel</th>
+                <th>Request Date</th>
+                <th>Check-in</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bookings %}
+            <tr>
+                <td>#{{ b.booking_id }}</td>
+                <td>{{ b.first_name }} {{ b.last_name }}</td>
+                <td>{{ b.room_number }}</td>
+                <td>{{ b.hostel_name }}</td>
+                <td>{{ b.request_date }}</td>
+                <td>{{ b.check_in_date }}</td>
+                <td><span class="badge badge--{{ b.status|lower }}">{{ b.status }}</span></td>
+                <td>
+                    {% if b.status == 'Pending' %}
+                    <div class="action-btns">
+                        <form method="POST" action="{{ url_for('booking_action', id=b.booking_id) }}" style="display:inline;">
+                            <input type="hidden" name="action" value="approve">
+                            <button type="submit" class="btn btn--sm btn--tertiary">✅ Approve</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('booking_action', id=b.booking_id) }}" style="display:inline;">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="btn btn--sm btn--danger">❌ Reject</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8">
+                <div class="empty-state">
+                    <div class="empty-state__icon">📋</div>
+                    <div class="empty-state__text">No booking requests</div>
+                </div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

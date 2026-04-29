@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Payments — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>💰 Payments</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('payment_add') }}" class="btn btn--primary" id="btn-add-payment">➕ Add Payment</a>
+        <a href="{{ url_for('payments_export') }}" class="btn btn--tertiary" id="btn-export">📥 Export CSV</a>
+    </div>
+</div>
+
+<div class="filters-bar">
+    <form method="GET" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <select name="status" class="form-control" id="filter-status">
+            <option value="">All Status</option>
+            <option value="Completed" {% if request.args.get('status')=='Completed' %}selected{% endif %}>Completed</option>
+            <option value="Pending" {% if request.args.get('status')=='Pending' %}selected{% endif %}>Pending</option>
+            <option value="Failed" {% if request.args.get('status')=='Failed' %}selected{% endif %}>Failed</option>
+            <option value="Refunded" {% if request.args.get('status')=='Refunded' %}selected{% endif %}>Refunded</option>
+        </select>
+        <select name="method" class="form-control" id="filter-method">
+            <option value="">All Methods</option>
+            <option value="Cash" {% if request.args.get('method')=='Cash' %}selected{% endif %}>Cash</option>
+            <option value="UPI" {% if request.args.get('method')=='UPI' %}selected{% endif %}>UPI</option>
+            <option value="Card" {% if request.args.get('method')=='Card' %}selected{% endif %}>Card</option>
+            <option value="Bank Transfer" {% if request.args.get('method')=='Bank Transfer' %}selected{% endif %}>Bank Transfer</option>
+        </select>
+        <button type="submit" class="btn btn--primary btn--sm">🔍 Filter</button>
+    </form>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Receipt</th>
+                <th>Student</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Method</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in payments %}
+            <tr>
+                <td><small>{{ p.receipt_no }}</small></td>
+                <td>{{ p.first_name }} {{ p.last_name }}</td>
+                <td><strong>₹{{ "{:,.0f}".format(p.amount) }}</strong></td>
+                <td>{{ p.payment_for }}</td>
+                <td>{{ p.payment_method }}</td>
+                <td>{{ p.payment_date }}</td>
+                <td><span class="badge badge--{{ p.status|lower }}">{{ p.status }}</span></td>
+                <td>
+                    {% if p.status == 'Pending' %}
+                    <form method="POST" action="{{ url_for('payment_update_status', id=p.payment_id) }}" style="display:inline;">
+                        <input type="hidden" name="status" value="Completed">
+                        <button type="submit" class="btn btn--sm btn--tertiary">✅ Complete</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8">
+                <div class="empty-state">
+                    <div class="empty-state__icon">💰</div>
+                    <div class="empty-state__text">No payments found</div>
+                </div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

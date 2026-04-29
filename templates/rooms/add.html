@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{% if room %}Edit Room{% else %}Add Room{% endif %} — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if room %}✏️ Edit Room{% else %}🏠 Add Room{% endif %}</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('rooms_list') }}" class="btn btn--ghost">← Back</a>
+    </div>
+</div>
+
+<div class="card form-card">
+    <form method="POST" id="room-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="hostel_id">Hostel</label>
+                <select name="hostel_id" id="hostel_id" class="form-control" required>
+                    <option value="">Select Hostel</option>
+                    {% for h in hostels %}
+                    <option value="{{ h.hostel_id }}" {% if room and room.hostel_id == h.hostel_id %}selected{% endif %}>{{ h.hostel_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="room_number">Room Number</label>
+                <input type="text" name="room_number" id="room_number" class="form-control" value="{{ room.room_number if room else '' }}" required placeholder="e.g. NM-301">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="floor_number">Floor</label>
+                <input type="number" name="floor_number" id="floor_number" class="form-control" value="{{ room.floor_number if room else '1' }}" required min="0">
+            </div>
+            <div class="form-group">
+                <label for="room_type">Room Type</label>
+                <select name="room_type" id="room_type" class="form-control" required>
+                    <option value="Single" {% if room and room.room_type=='Single' %}selected{% endif %}>Single</option>
+                    <option value="Double" {% if room and room.room_type=='Double' %}selected{% endif %}>Double</option>
+                    <option value="Triple" {% if room and room.room_type=='Triple' %}selected{% endif %}>Triple</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="capacity">Capacity</label>
+                <input type="number" name="capacity" id="capacity" class="form-control" value="{{ room.capacity if room else '2' }}" required min="1" max="4">
+            </div>
+            <div class="form-group">
+                <label for="rent_per_month">Rent per Month (₹)</label>
+                <input type="number" name="rent_per_month" id="rent_per_month" class="form-control" value="{{ room.rent_per_month if room else '' }}" required step="0.01" min="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="has_ac">Air Conditioning</label>
+                <select name="has_ac" id="has_ac" class="form-control">
+                    <option value="0" {% if room and not room.has_ac %}selected{% endif %}>No</option>
+                    <option value="1" {% if room and room.has_ac %}selected{% endif %}>Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="has_wifi">WiFi</label>
+                <select name="has_wifi" id="has_wifi" class="form-control">
+                    <option value="1" {% if not room or room.has_wifi %}selected{% endif %}>Yes</option>
+                    <option value="0" {% if room and not room.has_wifi %}selected{% endif %}>No</option>
+                </select>
+            </div>
+        </div>
+        {% if room %}
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select name="status" id="status" class="form-control">
+                <option value="Available" {% if room.status=='Available' %}selected{% endif %}>Available</option>
+                <option value="Full" {% if room.status=='Full' %}selected{% endif %}>Full</option>
+                <option value="Maintenance" {% if room.status=='Maintenance' %}selected{% endif %}>Maintenance</option>
+            </select>
+        </div>
+        {% endif %}
+        <div style="margin-top:8px;">
+            <button type="submit" class="btn btn--primary" id="btn-submit">💾 {% if room %}Update{% else %}Save{% endif %} Room</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Edit Student — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>✏️ Edit Student</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('students_list') }}" class="btn btn--ghost">← Back</a>
+    </div>
+</div>
+
+<div class="card form-card">
+    <form method="POST" action="{{ url_for('student_edit', id=student.student_id) }}" id="student-edit-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="registration_no">Registration No</label>
+                <input type="text" name="registration_no" id="registration_no" class="form-control" value="{{ student.registration_no }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" value="{{ student.email }}" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" name="first_name" id="first_name" class="form-control" value="{{ student.first_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" name="last_name" id="last_name" class="form-control" value="{{ student.last_name }}" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" name="phone" id="phone" class="form-control" value="{{ student.phone }}">
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" class="form-control" required>
+                    <option value="Male" {% if student.gender=='Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if student.gender=='Female' %}selected{% endif %}>Female</option>
+                    <option value="Other" {% if student.gender=='Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" name="department" id="department" class="form-control" value="{{ student.department }}">
+            </div>
+            <div class="form-group">
+                <label for="year_of_study">Year of Study</label>
+                <select name="year_of_study" id="year_of_study" class="form-control">
+                    {% for y in range(1,6) %}
+                    <option value="{{ y }}" {% if student.year_of_study == y %}selected{% endif %}>{{ y }}{{ ['st','nd','rd','th','th'][y-1] }} Year</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth</label>
+                <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" value="{{ student.date_of_birth }}">
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="Active" {% if student.status=='Active' %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if student.status=='Inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="Graduated" {% if student.status=='Graduated' %}selected{% endif %}>Graduated</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea name="address" id="address" class="form-control" rows="2">{{ student.address or '' }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="guardian_name">Guardian Name</label>
+                <input type="text" name="guardian_name" id="guardian_name" class="form-control" value="{{ student.guardian_name or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="guardian_phone">Guardian Phone</label>
+                <input type="text" name="guardian_phone" id="guardian_phone" class="form-control" value="{{ student.guardian_phone or '' }}">
+            </div>
+        </div>
+        <div style="margin-top:8px;">
+            <button type="submit" class="btn btn--primary" id="btn-update">💾 Update Student</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

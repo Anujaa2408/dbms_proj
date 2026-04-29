@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Allocations — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🔑 Room Allocations</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('allocation_add') }}" class="btn btn--primary" id="btn-allocate">➕ Allocate Room</a>
+    </div>
+</div>
+
+<div class="filters-bar">
+    <form method="GET" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <select name="status" class="form-control" id="filter-status">
+            <option value="">All Status</option>
+            <option value="Active" {% if request.args.get('status')=='Active' %}selected{% endif %}>Active</option>
+            <option value="Vacated" {% if request.args.get('status')=='Vacated' %}selected{% endif %}>Vacated</option>
+        </select>
+        <button type="submit" class="btn btn--primary btn--sm">🔍 Filter</button>
+    </form>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Room</th>
+                <th>Hostel</th>
+                <th>Alloc Date</th>
+                <th>Vacate Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in allocations %}
+            <tr>
+                <td>#{{ a.allocation_id }}</td>
+                <td>{{ a.first_name }} {{ a.last_name }}<br><small style="color:var(--text-muted);">{{ a.registration_no }}</small></td>
+                <td>{{ a.room_number }}</td>
+                <td>{{ a.hostel_name }}</td>
+                <td>{{ a.alloc_date }}</td>
+                <td>{{ a.vacate_date or '—' }}</td>
+                <td><span class="badge badge--{{ a.status|lower }}">{{ a.status }}</span></td>
+                <td>
+                    {% if a.status == 'Active' %}
+                    <form method="POST" action="{{ url_for('allocation_vacate', id=a.allocation_id) }}" onsubmit="return confirm('Vacate this allocation?')">
+                        <button type="submit" class="btn btn--sm btn--danger">🚪 Vacate</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8">
+                <div class="empty-state">
+                    <div class="empty-state__icon">🔑</div>
+                    <div class="empty-state__text">No allocations found</div>
+                </div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

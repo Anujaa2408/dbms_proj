@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Student Report — HostelMS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🎓 Student Report</h1>
+    <div class="page-header__actions">
+        <a href="{{ url_for('report_occupancy') }}" class="btn btn--ghost btn--sm">📈 Occupancy</a>
+        <a href="{{ url_for('report_payments') }}" class="btn btn--ghost btn--sm">💰 Payments</a>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <div class="span-6">
+        <div class="card">
+            <div class="card__title">Students by Department</div>
+            <div class="chart-container" style="margin-top:12px;">
+                <canvas id="deptChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="span-6">
+        <div class="card">
+            <div class="card__title">Students by Year</div>
+            <div class="chart-container" style="margin-top:12px;">
+                <canvas id="yearChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="span-12">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reg No</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Year</th>
+                        <th>Room</th>
+                        <th>Hostel</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ s.registration_no }}</td>
+                        <td>{{ s.first_name }} {{ s.last_name }}</td>
+                        <td>{{ s.department }}</td>
+                        <td>{{ s.year_of_study }}</td>
+                        <td>{{ s.room_number or '—' }}</td>
+                        <td>{{ s.hostel_name or '—' }}</td>
+                        <td><span class="badge badge--{{ s.status|lower }}">{{ s.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const colors = ['#FFD600','#CD4800','#0DF79D','#6BC5FF','#FF6B6B','#B0B0B0','#8B5CF6','#F97316'];
+const deptData = {{ dept_data|tojson }};
+new Chart(document.getElementById('deptChart'), {
+    type: 'doughnut',
+    data: { labels: deptData.labels, datasets: [{ data: deptData.values, backgroundColor: colors.slice(0, deptData.labels.length), borderColor: '#1A1A1A', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'Space Grotesk' } } } } }
+});
+const yearData = {{ year_data|tojson }};
+new Chart(document.getElementById('yearChart'), {
+    type: 'bar',
+    data: { labels: yearData.labels, datasets: [{ label: 'Students', data: yearData.values, backgroundColor: '#FFD600', borderColor: '#1A1A1A', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+});
+</script>
+{% endblock %}
